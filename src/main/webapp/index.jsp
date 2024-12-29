@@ -189,10 +189,14 @@
         }
     </style>
     <script>
-        // Redirect to BookOnLine.jsp when "Book Online" button is clicked
+        // Redirect to respective pages when buttons are clicked
         document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('BookOnLineBtn').addEventListener('click', function () {
                 window.location.href = 'BookOnLine.jsp';
+            });
+
+            document.getElementById('CallNowBtn').addEventListener('click', function () {
+                window.location.href = 'callNow.jsp';
             });
         });
     </script>

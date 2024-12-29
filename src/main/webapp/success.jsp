@@ -80,15 +80,6 @@
         .cancel-btn:hover {
             background-color: #e53935;
         }
-
-        a {
-            text-decoration: none;
-            color: white;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
     </style>
 </head>
 <body>
@@ -128,8 +119,18 @@
         </table>
 
         <div class="actions">
-            <button class="pay-btn"><a href="payment.jsp">Make Payment</a></button>
-            <button class="cancel-btn"><a href="DeleteRider?id=${id}">Cancel Booking</a></button>
+            <!-- Make Payment Button -->
+            <form action="paymentAPI" method="POST" style="margin: 0;">
+                <input type="hidden" name="bookingId" value="${id}">
+                <input type="hidden" name="amount" value="${price}">
+                <button type="submit" class="pay-btn">Make Payment</button>
+            </form>
+
+            <!-- Cancel Booking Button -->
+            <form action="cancelBooking.jsp" method="POST" style="margin: 0;">
+                <input type="hidden" name="id" value="${id}">
+                <button type="submit" class="cancel-btn">Cancel Booking</button>
+            </form>
         </div>
 
         <p style="text-align: center; margin-top: 20px;">
@@ -138,4 +139,3 @@
     </div>
 </body>
 </html>
-
