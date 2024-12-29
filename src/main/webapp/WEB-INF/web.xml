@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xmlns="http://xmlns.jcp.org/xml/ns/javaee" 
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee 
+                             http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd" 
+         id="WebApp_ID" version="4.0">
+
+    <display-name>Bona_Servlet_01</display-name>
+
+    <!-- Welcome file configuration -->
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+
+    <!-- Servlet and mapping for BookOnLineServlet -->
+   <servlet>
+    <servlet-name>BookOnLineServlet</servlet-name>
+    <servlet-class>com.bona.servlet.BookOnLineServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>BookOnLineServlet</servlet-name>
+    <url-pattern>/BookOnLine</url-pattern>
+</servlet-mapping>
+
+    <!-- Servlet and mapping for ConfirmBookingServlet -->
+    <servlet>
+        <servlet-name>ConfirmBookingServlet</servlet-name>
+        <servlet-class>com.bona.servlet.ConfirmBookingServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ConfirmBookingServlet</servlet-name>
+        <url-pattern>/ConfirmBooking</url-pattern>
+    </servlet-mapping>
+
+    <!-- Servlet and mapping for DeleteRiderServlet -->
+    <servlet>
+        <servlet-name>DeleteRiderServlet</servlet-name>
+        <servlet-class>com.bona.servlet.DeleteRiderServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DeleteRiderServlet</servlet-name>
+        <url-pattern>/DeleteRider</url-pattern>
+    </servlet-mapping>
+
+</web-app>
+
