@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cancellation Successful</title>
+    <title>Cancellation Status</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -30,6 +30,11 @@
             color: #f44336;
         }
 
+        p {
+            font-size: 1.2rem;
+            margin: 20px 0;
+        }
+
         a {
             display: inline-block;
             margin-top: 20px;
@@ -39,31 +44,56 @@
             text-decoration: none;
             border-radius: 5px;
         }
+
+        a:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <% 
+        <%
             String bookingId = request.getParameter("id");
-            try {
-                String url = "jdbc:mysql://localhost:3306/yourDatabase";
-                String user = "yourUsername";
-                String pass = "yourPassword";
-                Connection conn = DriverManager.getConnection(url, user, pass);
-                String sql = "DELETE FROM bookings WHERE id = ?";
-                PreparedStatement ps = conn.prepareStatement(sql);
-                ps.setString(1, bookingId);
-                int rows = ps.executeUpdate();
-                conn.close();
-        %>
-            <h1>Cancellation Successful!</h1>
-            <p>Your booking has been canceled.</p>
-        <% 
-            } catch (Exception e) { 
+
+            if (bookingId == null || bookingId.isEmpty()) {
         %>
             <h1>Error!</h1>
-            <p>Unable to cancel the booking. Please try again later.</p>
-        <% } %>
+            <p>Invalid booking ID. Please try again.</p>
+            <a href="home.jsp">Go Back to Home</a>
+        <%
+            } else {
+                try {
+                    String url = "jdbc:mysql://localhost:3306/yourDatabase";
+                    String user = "yourUsername";
+                    String pass = "yourPassword";
+
+                    Connection conn = DriverManager.getConnection(url, user, pass);
+                    String sql = "DELETE FROM bookings WHERE id = ?";
+                    PreparedStatement ps = conn.prepareStatement(sql);
+                    ps.setString(1, bookingId);
+                    int rows = ps.executeUpdate();
+                    conn.close();
+
+                    if (rows > 0) {
+        %>
+                        <h1>Cancellation Successful!</h1>
+                        <p>Your booking has been canceled.</p>
+        <%
+                    } else {
+        %>
+                        <h1>Error!</h1>
+                        <p>No booking found with the provided ID. Please check and try again.</p>
+        <%
+                    }
+                } catch (Exception e) {
+        %>
+                    <h1>Error!</h1>
+                    <p>Unable to cancel the booking. Please try again later.</p>
+        <%
+                    e.printStackTrace();
+                }
+            }
+        %>
         <a href="home.jsp">Go Back to Home</a>
     </div>
 </body>

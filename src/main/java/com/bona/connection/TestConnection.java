@@ -1,3 +1,5 @@
+package com.bona.connection;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -11,4 +13,3 @@ public class TestConnection {
         }
     }
 }
-

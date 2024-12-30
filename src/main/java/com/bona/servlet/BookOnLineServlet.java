@@ -2,86 +2,92 @@ package com.bona.servlet;
 
 import com.bona.deo.RiderDAO;
 import com.bona.entity.Rider;
-import com.bona.utility.DistanceCalculator;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+/**
+ * Servlet for handling online booking requests.
+ */
 public class BookOnLineServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+
+    private static final Logger LOGGER = Logger.getLogger(BookOnLineServlet.class.getName());
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
-            // Retrieve and validate parameters
-            String firstName = request.getParameter("firstName");
-            String lastName = request.getParameter("lastName");
-            String phoneNumber = request.getParameter("phoneNumber");
-            String email = request.getParameter("email");
-            String pickupLocation = request.getParameter("pickupLocation");
-            String dropOffLocation = request.getParameter("dropOffLocation");
-            String pickupDate = request.getParameter("pickupDate");
-            String pickupTime = request.getParameter("pickupTime");
-            int numPassengers = Integer.parseInt(request.getParameter("numPassengers"));
-            boolean requireWheelchairVan = Boolean.parseBoolean(request.getParameter("requireWheelchairVan"));
-            String requireChildSeat = request.getParameter("requireChildSeat");
-            String paymentType = request.getParameter("paymentType");
-            String confirmationRequest = request.getParameter("confirmationRequest");
-            boolean bookReturn = Boolean.parseBoolean(request.getParameter("bookReturn"));
+            // Debug log to track servlet execution
+            LOGGER.log(Level.INFO, "BookOnLineServlet execution started");
 
-            // Validate phone number length
-            if (phoneNumber.length() > 15) {
-                throw new IllegalArgumentException("Phone number exceeds the maximum allowed length of 15 characters.");
+            // Retrieve and validate booking parameters
+            String firstName = req.getParameter("firstName");
+            String lastName = req.getParameter("lastName");
+            String email = req.getParameter("email");
+            String phoneNumber = req.getParameter("phoneNumber");
+            String pickupLocation = req.getParameter("pickupLocation");
+            String dropOffLocation = req.getParameter("dropOffLocation");
+            String pickupDate = req.getParameter("pickupDate");
+            String pickupTime = req.getParameter("pickupTime");
+            String numPassengersParam = req.getParameter("numPassengers");
+            String requireWheelchairVanParam = req.getParameter("requireWheelchairVan");
+            String requireChildSeat = req.getParameter("requireChildSeat");
+            String paymentType = req.getParameter("paymentType");
+            String confirmationRequest = req.getParameter("confirmationRequest");
+            String bookReturnParam = req.getParameter("bookReturn");
+            String priceParam = req.getParameter("price");
+
+            // Handle missing or invalid parameters
+            if (firstName == null || lastName == null || pickupLocation == null || dropOffLocation == null) {
+                LOGGER.log(Level.WARNING, "Missing required fields: firstName, lastName, pickupLocation, dropOffLocation");
+                req.setAttribute("error", "Required fields are missing. Please provide all necessary information.");
+                req.getRequestDispatcher("error.jsp").forward(req, resp);
+                return;
             }
 
-            // Calculate the distance
-            double miles = DistanceCalculator.calculateDistance(pickupLocation, dropOffLocation);
-            if (miles <= 0) {
-                throw new IllegalArgumentException("Invalid distance calculated for the provided locations.");
-            }
-
-            // Calculate the trip price
-            double tripPrice = miles * 2; // Base price: $2 per mile
-            if (pickupTime.compareTo("12:00") > 0) {
-                tripPrice = miles * 3.5; // Higher price after 12 PM
-            }
-            if ("Small".equalsIgnoreCase(requireChildSeat) || "Medium".equalsIgnoreCase(requireChildSeat) || "Large".equalsIgnoreCase(requireChildSeat)) {
-                tripPrice += 5; // Add $5 for child seat
-            }
-
-            // Create and save the rider
+            // Map parameters to a Rider entity
             Rider rider = new Rider();
             rider.setFirstName(firstName);
             rider.setLastName(lastName);
-            rider.setPhoneNumber(phoneNumber);
             rider.setEmail(email);
+            rider.setPhoneNumber(phoneNumber);
             rider.setPickupLocation(pickupLocation);
             rider.setDropOffLocation(dropOffLocation);
             rider.setPickupDate(pickupDate);
             rider.setPickupTime(pickupTime);
-            rider.setNumPassengers(numPassengers);
-            rider.setRequireWheelchairVan(requireWheelchairVan);
+            rider.setNumPassengers(numPassengersParam != null ? Integer.parseInt(numPassengersParam) : 0);
+            rider.setRequireWheelchairVan(requireWheelchairVanParam != null && Boolean.parseBoolean(requireWheelchairVanParam));
             rider.setRequireChildSeat(requireChildSeat);
             rider.setPaymentType(paymentType);
             rider.setConfirmationRequest(confirmationRequest);
-            rider.setBookReturn(bookReturn);
-            rider.setPrice(tripPrice);
+            rider.setBookReturn(bookReturnParam != null && Boolean.parseBoolean(bookReturnParam));
+            rider.setPrice(priceParam != null ? Double.parseDouble(priceParam) : 0.0);
 
+            // Save rider using DAO
             RiderDAO riderDAO = new RiderDAO();
-            if (!riderDAO.saveRider(rider)) {
-                throw new Exception("Failed to save booking information.");
-            }
+            boolean success = riderDAO.saveRider(rider);
 
-            // Redirect to success page
-            response.sendRedirect("success.jsp");
+            // Debug log to confirm saving
+            LOGGER.log(Level.INFO, "Rider saved status: " + success);
+
+            // Redirect based on success or failure
+            if (success) {
+                LOGGER.log(Level.INFO, "Rider saved successfully. Redirecting to success.jsp");
+                req.setAttribute("booking", rider); // Pass Rider object to JSP
+                req.getRequestDispatcher("success.jsp").forward(req, resp);
+            } else {
+                LOGGER.log(Level.WARNING, "Failed to save rider. Redirecting to error.jsp");
+                req.setAttribute("error", "Failed to save booking. Please try again.");
+                req.getRequestDispatcher("error.jsp").forward(req, resp);
+            }
         } catch (Exception e) {
-            e.printStackTrace();
-            // Redirect to an error page with a detailed message
-            response.sendRedirect("error.jsp?errorMessage=" + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error occurred while processing booking", e);
+            req.setAttribute("error", "An error occurred while processing your request: " + e.getMessage());
+            req.getRequestDispatcher("error.jsp").forward(req, resp);
         }
     }
 }

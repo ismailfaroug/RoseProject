@@ -1,3 +1,14 @@
+<%@ page import="com.bona.entity.Rider" %>
+<%
+    Rider booking = (Rider) request.getAttribute("booking");
+    if (booking == null) {
+%>
+    <h1>Error</h1>
+    <p>Booking details not available.</p>
+<%
+        return;
+    }
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -90,52 +101,46 @@
         <table>
             <tr>
                 <th>First Name</th>
-                <td>${firstName}</td>
+                <td><%= booking.getFirstName() %></td>
             </tr>
             <tr>
                 <th>Last Name</th>
-                <td>${lastName}</td>
+                <td><%= booking.getLastName() %></td>
             </tr>
             <tr>
                 <th>Pickup Location</th>
-                <td>${pickupLocation}</td>
+                <td><%= booking.getPickupLocation() %></td>
             </tr>
             <tr>
                 <th>Drop-off Location</th>
-                <td>${dropOffLocation}</td>
+                <td><%= booking.getDropOffLocation() %></td>
             </tr>
             <tr>
                 <th>Pickup Date</th>
-                <td>${pickupDate}</td>
+                <td><%= booking.getPickupDate() %></td>
             </tr>
             <tr>
                 <th>Pickup Time</th>
-                <td>${pickupTime}</td>
+                <td><%= booking.getPickupTime() %></td>
             </tr>
             <tr>
                 <th>Price</th>
-                <td>$${price}</td>
+                <td>$<%= booking.getPrice() %></td>
             </tr>
         </table>
 
         <div class="actions">
-            <!-- Make Payment Button -->
             <form action="paymentAPI" method="POST" style="margin: 0;">
-                <input type="hidden" name="bookingId" value="${id}">
-                <input type="hidden" name="amount" value="${price}">
+                <input type="hidden" name="bookingId" value="<%= booking.getId() %>">
+                <input type="hidden" name="amount" value="<%= booking.getPrice() %>">
                 <button type="submit" class="pay-btn">Make Payment</button>
             </form>
 
-            <!-- Cancel Booking Button -->
             <form action="cancelBooking.jsp" method="POST" style="margin: 0;">
-                <input type="hidden" name="id" value="${id}">
+                <input type="hidden" name="id" value="<%= booking.getId() %>">
                 <button type="submit" class="cancel-btn">Cancel Booking</button>
             </form>
         </div>
-
-        <p style="text-align: center; margin-top: 20px;">
-            <a href="home.jsp">Go to Home Page</a>
-        </p>
     </div>
 </body>
 </html>
