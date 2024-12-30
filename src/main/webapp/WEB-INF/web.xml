@@ -41,6 +41,21 @@
         <servlet-name>DeleteRiderServlet</servlet-name>
         <url-pattern>/DeleteRider</url-pattern>
     </servlet-mapping>
-
+<servlet>
+    <servlet-name>CallNowServlet</servlet-name>
+    <servlet-class>com.bona.servlet.CallNowServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>CallNowServlet</servlet-name>
+    <url-pattern>/CallNow</url-pattern>
+</servlet-mapping>
+<servlet>
+    <servlet-name>TwilioCallServlet</servlet-name>
+    <servlet-class>com.bona.servlet.TwilioCallServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>TwilioCallServlet</servlet-name>
+    <url-pattern>/twilio-call</url-pattern>
+</servlet-mapping>
 </web-app>
 

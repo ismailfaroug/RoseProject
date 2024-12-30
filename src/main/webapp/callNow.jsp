@@ -80,11 +80,10 @@
         <h1>Contact Your Local Area</h1>
         <p>Select your region to place a call:</p>
         <div class="button-group">
-            <a href="tel:8176666321" title="Call Dallas Area">Call Dallas Area</a>
-            <a href="tel:8175036237" title="Call Fort Worth Area">Call Fort Worth Area</a>
+            <!-- Dynamic Links using the CallNowServlet -->
+            <a href="CallNow?phone=8175036237" title="Call Dallas Area">Call Dallas Area</a>
+            <a href="CallNow?phone=8175036237" title="Call Fort Worth Area">Call Fort Worth Area</a>
         </div>
     </div>
 </body>
 </html>
-
-
