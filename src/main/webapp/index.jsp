@@ -31,13 +31,25 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px;
+            height: 100px; /* Consistent navbar height */
+            padding: 0 20px;
             background-color: #ffffff;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
-        nav .logo img {
-            height: 100px;
+        nav .header-images {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        nav .header-images img {
+            height: 70px; /* Adjusted for logo */
+            width: auto;
+        }
+
+        nav .nav-photo img {
+            height: 100px; /* Adjusted for header image */
             width: auto;
         }
 
@@ -45,6 +57,9 @@
             list-style: none;
             display: flex;
             gap: 15px;
+            align-items: center; /* Align links vertically with the images */
+            height: 100%; /* Matches navbar height */
+            margin: 0;
         }
 
         nav ul li a {
@@ -64,7 +79,8 @@
         /* Hero Section */
         .hero {
             text-align: center;
-            margin: 20px;
+            margin: 0;
+            padding: 20px;
         }
 
         .hero h1 {
@@ -93,6 +109,13 @@
             background-color: #e600a8;
             transform: translateY(-3px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+			@keyframes color-cycle {
+            0% { color: green; }
+            33% { color: goldenrod; }
+            66% { color: red; }
+            100% { color: green; }
         }
 
         /* Dynamic Photo Section */
@@ -204,9 +227,11 @@
 <body>
     <!-- Navbar -->
     <nav>
-        <div class="logo">
+        <div class="header-images">
             <img src="images/logo1.png" alt="Rose Logo">
-            <img src="images/Header1.jpg" alt="Rose Logo">
+        </div>
+        <div class="nav-photo">
+            <img src="images/Header1.jpg" alt="Header Image">
         </div>
         <ul>
             <li><a href="#">Home</a></li>
@@ -226,11 +251,22 @@
 
     <!-- Dynamic Photo Section -->
     <div class="body-photo-container">
-        <img class="body-photo" src="images/Body1.jpg" alt="Body Photo 1">
-        <img class="body-photo" src="images/Body2.jpg" alt="Body Photo 2">
-        <img class="body-photo" src="images/Body3.jpg" alt="Body Photo 3">
-        <img class="body-photo" src="images/Body5.jpg" alt="Body Photo 5">
+        
+        <img class="body-photo" src="images/Body6.jpg" alt="Body Photo 6">
+        <img class="body-photo" src="images/Body7.jpg" alt="Body Photo 7">
+        <img class="body-photo" src="images/Body8.jpg" alt="Body Photo 8">
+        <img class="body-photo" src="images/Body9.jpg" alt="Body Photo 9">
+        
+        
     </div>
+    <div>
+    <img class="body-photo" src="images/Body1.jpg" alt="Body Photo 1">
+        <img class="body-photo" src="images/Body2.jpg" alt="Body Photo 2">
+        <img class="body-photo" src="images/Body10.jpg" alt="Body Photo 10">
+        <img class="body-photo" src="images/Body5.jpg" alt="Body Photo 5">
+        
+    </div>
+    
 
     <!-- Footer -->
     <footer>
