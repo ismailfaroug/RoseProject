@@ -135,7 +135,6 @@
                     <option value="Large">Large</option>
                 </select>
             </div>
-           
             <div>
                 <label for="confirmationRequest">Confirmation Request:</label>
                 <select id="confirmationRequest" name="confirmationRequest">
@@ -170,7 +169,7 @@
             </div>
         </div>
         
-            <div style="text-align: center; margin-top: 20px;">
+        <div style="text-align: center; margin-top: 20px;">
             <button type="submit">Submit Booking</button>
         </div>
     </form>

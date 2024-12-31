@@ -13,14 +13,14 @@
     </welcome-file-list>
 
     <!-- Servlet and mapping for BookOnLineServlet -->
-   <servlet>
-    <servlet-name>BookOnLineServlet</servlet-name>
-    <servlet-class>com.bona.servlet.BookOnLineServlet</servlet-class>
-</servlet>
-<servlet-mapping>
-    <servlet-name>BookOnLineServlet</servlet-name>
-    <url-pattern>/BookOnLine</url-pattern>
-</servlet-mapping>
+    <servlet>
+        <servlet-name>BookOnLineServlet</servlet-name>
+        <servlet-class>com.bona.servlet.BookOnLineServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>BookOnLineServlet</servlet-name>
+        <url-pattern>/BookOnLine</url-pattern>
+    </servlet-mapping>
 
     <!-- Servlet and mapping for ConfirmBookingServlet -->
     <servlet>
@@ -41,21 +41,35 @@
         <servlet-name>DeleteRiderServlet</servlet-name>
         <url-pattern>/DeleteRider</url-pattern>
     </servlet-mapping>
-<servlet>
-    <servlet-name>CallNowServlet</servlet-name>
-    <servlet-class>com.bona.servlet.CallNowServlet</servlet-class>
-</servlet>
-<servlet-mapping>
-    <servlet-name>CallNowServlet</servlet-name>
-    <url-pattern>/CallNow</url-pattern>
-</servlet-mapping>
-<servlet>
-    <servlet-name>TwilioCallServlet</servlet-name>
-    <servlet-class>com.bona.servlet.TwilioCallServlet</servlet-class>
-</servlet>
-<servlet-mapping>
-    <servlet-name>TwilioCallServlet</servlet-name>
-    <url-pattern>/twilio-call</url-pattern>
-</servlet-mapping>
-</web-app>
 
+    <!-- Servlet and mapping for CallNowServlet -->
+    <servlet>
+        <servlet-name>CallNowServlet</servlet-name>
+        <servlet-class>com.bona.servlet.CallNowServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CallNowServlet</servlet-name>
+        <url-pattern>/CallNow</url-pattern>
+    </servlet-mapping>
+
+    <!-- Servlet and mapping for TwilioCallServlet -->
+    <servlet>
+        <servlet-name>TwilioCallServlet</servlet-name>
+        <servlet-class>com.bona.servlet.TwilioCallServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TwilioCallServlet</servlet-name>
+        <url-pattern>/twilio-call</url-pattern>
+    </servlet-mapping>
+
+    <!-- Servlet and mapping for CancelBookingServlet -->
+    <servlet>
+        <servlet-name>CancelBookingServlet</servlet-name>
+        <servlet-class>com.bona.servlet.CancelBookingServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CancelBookingServlet</servlet-name>
+        <url-pattern>/CancelBooking</url-pattern>
+    </servlet-mapping>
+
+</web-app>

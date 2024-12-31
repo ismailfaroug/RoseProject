@@ -21,7 +21,6 @@ public class BookOnLineServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
-            // Debug log to track servlet execution
             LOGGER.log(Level.INFO, "BookOnLineServlet execution started");
 
             // Retrieve and validate booking parameters
@@ -39,9 +38,8 @@ public class BookOnLineServlet extends HttpServlet {
             String paymentType = req.getParameter("paymentType");
             String confirmationRequest = req.getParameter("confirmationRequest");
             String bookReturnParam = req.getParameter("bookReturn");
-            String priceParam = req.getParameter("price");
 
-            // Handle missing or invalid parameters
+            // Validate required fields
             if (firstName == null || lastName == null || pickupLocation == null || dropOffLocation == null) {
                 LOGGER.log(Level.WARNING, "Missing required fields: firstName, lastName, pickupLocation, dropOffLocation");
                 req.setAttribute("error", "Required fields are missing. Please provide all necessary information.");
@@ -49,7 +47,15 @@ public class BookOnLineServlet extends HttpServlet {
                 return;
             }
 
-            // Map parameters to a Rider entity
+            // Parse and calculate pricing
+            int numPassengers = numPassengersParam != null ? Integer.parseInt(numPassengersParam) : 0;
+            double basePrice = 20.0; // Base price for the ride
+            double perPassengerCost = 5.0; // Additional cost per passenger
+            double originalPrice = basePrice + (perPassengerCost * numPassengers);
+            double discount = calculateDiscount(numPassengers, originalPrice);
+            double finalPrice = originalPrice - discount;
+
+            // Create Rider object
             Rider rider = new Rider();
             rider.setFirstName(firstName);
             rider.setLastName(lastName);
@@ -59,28 +65,27 @@ public class BookOnLineServlet extends HttpServlet {
             rider.setDropOffLocation(dropOffLocation);
             rider.setPickupDate(pickupDate);
             rider.setPickupTime(pickupTime);
-            rider.setNumPassengers(numPassengersParam != null ? Integer.parseInt(numPassengersParam) : 0);
+            rider.setNumPassengers(numPassengers);
             rider.setRequireWheelchairVan(requireWheelchairVanParam != null && Boolean.parseBoolean(requireWheelchairVanParam));
             rider.setRequireChildSeat(requireChildSeat);
             rider.setPaymentType(paymentType);
             rider.setConfirmationRequest(confirmationRequest);
             rider.setBookReturn(bookReturnParam != null && Boolean.parseBoolean(bookReturnParam));
-            rider.setPrice(priceParam != null ? Double.parseDouble(priceParam) : 0.0);
+            rider.setPrice(finalPrice);
 
-            // Save rider using DAO
+            // Save Rider in the database
             RiderDAO riderDAO = new RiderDAO();
             boolean success = riderDAO.saveRider(rider);
 
-            // Debug log to confirm saving
-            LOGGER.log(Level.INFO, "Rider saved status: " + success);
-
-            // Redirect based on success or failure
             if (success) {
-                LOGGER.log(Level.INFO, "Rider saved successfully. Redirecting to success.jsp");
-                req.setAttribute("booking", rider); // Pass Rider object to JSP
+                LOGGER.log(Level.INFO, "Rider saved successfully.");
+                req.setAttribute("booking", rider);
+                req.setAttribute("originalPrice", originalPrice);
+                req.setAttribute("discount", discount);
+                req.setAttribute("finalPrice", finalPrice);
                 req.getRequestDispatcher("success.jsp").forward(req, resp);
             } else {
-                LOGGER.log(Level.WARNING, "Failed to save rider. Redirecting to error.jsp");
+                LOGGER.log(Level.WARNING, "Failed to save Rider.");
                 req.setAttribute("error", "Failed to save booking. Please try again.");
                 req.getRequestDispatcher("error.jsp").forward(req, resp);
             }
@@ -89,5 +94,15 @@ public class BookOnLineServlet extends HttpServlet {
             req.setAttribute("error", "An error occurred while processing your request: " + e.getMessage());
             req.getRequestDispatcher("error.jsp").forward(req, resp);
         }
+    }
+
+    /**
+     * Calculates discount based on the number of passengers and original price.
+     */
+    private double calculateDiscount(int numPassengers, double originalPrice) {
+        if (numPassengers >= 5) {
+            return originalPrice * 0.1; // 10% discount for 5 or more passengers
+        }
+        return 0.0; // No discount otherwise
     }
 }

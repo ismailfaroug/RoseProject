@@ -1,7 +1,11 @@
 <%@ page import="com.bona.entity.Rider" %>
 <%
     Rider booking = (Rider) request.getAttribute("booking");
-    if (booking == null) {
+    Double originalPrice = (Double) request.getAttribute("originalPrice");
+    Double discount = (Double) request.getAttribute("discount");
+    Double finalPrice = (Double) request.getAttribute("finalPrice");
+
+    if (booking == null || originalPrice == null || discount == null || finalPrice == null) {
 %>
     <h1>Error</h1>
     <p>Booking details not available.</p>
@@ -91,6 +95,24 @@
         .cancel-btn:hover {
             background-color: #e53935;
         }
+
+        .update-btn {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .update-btn:hover {
+            background-color: #1976D2;
+        }
+
+        .home-btn {
+            background-color: #FF9800;
+            color: white;
+        }
+
+        .home-btn:hover {
+            background-color: #FB8C00;
+        }
     </style>
 </head>
 <body>
@@ -124,21 +146,38 @@
                 <td><%= booking.getPickupTime() %></td>
             </tr>
             <tr>
-                <th>Price</th>
-                <td>$<%= booking.getPrice() %></td>
+                <th>Original Price</th>
+                <td>$<%= originalPrice %></td>
+            </tr>
+            <tr>
+                <th>Discount</th>
+                <td>$<%= discount %></td>
+            </tr>
+            <tr>
+                <th>Final Price</th>
+                <td>$<%= finalPrice %></td>
             </tr>
         </table>
 
         <div class="actions">
             <form action="paymentAPI" method="POST" style="margin: 0;">
                 <input type="hidden" name="bookingId" value="<%= booking.getId() %>">
-                <input type="hidden" name="amount" value="<%= booking.getPrice() %>">
+                <input type="hidden" name="amount" value="<%= finalPrice %>">
                 <button type="submit" class="pay-btn">Make Payment</button>
             </form>
 
-            <form action="cancelBooking.jsp" method="POST" style="margin: 0;">
+            <form action="CancelBooking" method="POST" style="margin: 0;">
                 <input type="hidden" name="id" value="<%= booking.getId() %>">
                 <button type="submit" class="cancel-btn">Cancel Booking</button>
+            </form>
+
+            <form action="BookOnLine.jsp" method="GET" style="margin: 0;">
+                <input type="hidden" name="id" value="<%= booking.getId() %>">
+                <button type="submit" class="update-btn">Update</button>
+            </form>
+
+            <form action="home.jsp" method="GET" style="margin: 0;">
+                <button type="submit" class="home-btn">Go Back to Home</button>
             </form>
         </div>
     </div>

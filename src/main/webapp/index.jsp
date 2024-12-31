@@ -206,6 +206,7 @@
     <nav>
         <div class="logo">
             <img src="images/logo1.png" alt="Rose Logo">
+            <img src="images/Header1.jpg" alt="Rose Logo">
         </div>
         <ul>
             <li><a href="#">Home</a></li>
