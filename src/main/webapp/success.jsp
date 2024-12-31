@@ -68,6 +68,10 @@
             margin-top: 20px;
         }
 
+        .actions form {
+            margin: 0;
+        }
+
         .actions button {
             padding: 10px 20px;
             margin: 5px;
@@ -160,23 +164,22 @@
         </table>
 
         <div class="actions">
-            <form action="paymentAPI" method="POST" style="margin: 0;">
+            <form action="paymentAPI" method="POST">
                 <input type="hidden" name="bookingId" value="<%= booking.getId() %>">
                 <input type="hidden" name="amount" value="<%= finalPrice %>">
                 <button type="submit" class="pay-btn">Make Payment</button>
             </form>
 
-            <form action="CancelBooking" method="POST" style="margin: 0;">
+            <form action="CancelBooking" method="POST">
                 <input type="hidden" name="id" value="<%= booking.getId() %>">
                 <button type="submit" class="cancel-btn">Cancel Booking</button>
             </form>
 
-            <form action="BookOnLine.jsp" method="GET" style="margin: 0;">
-                <input type="hidden" name="id" value="<%= booking.getId() %>">
+            <form action="BookOnLine.jsp" method="GET">
                 <button type="submit" class="update-btn">Update</button>
             </form>
 
-            <form action="home.jsp" method="GET" style="margin: 0;">
+            <form action="index.jsp" method="GET">
                 <button type="submit" class="home-btn">Go Back to Home</button>
             </form>
         </div>

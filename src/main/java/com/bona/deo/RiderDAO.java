@@ -6,11 +6,14 @@ import com.bona.entity.Rider;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Data Access Object for Rider operations.
  */
 public class RiderDAO {
+    private static final Logger LOGGER = Logger.getLogger(RiderDAO.class.getName());
 
     // Save Rider to the database
     public boolean saveRider(Rider rider) {
@@ -21,41 +24,22 @@ public class RiderDAO {
         try (Connection connection = ConnectionFactory.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            // Set parameters
-            stmt.setString(1, rider.getFirstName());
-            stmt.setString(2, rider.getLastName());
-            stmt.setString(3, rider.getEmail());
-            stmt.setString(4, rider.getPhoneNumber());
-            stmt.setString(5, rider.getPickupLocation());
-            stmt.setString(6, rider.getDropOffLocation());
-            stmt.setString(7, rider.getPickupDate());
-            stmt.setString(8, rider.getPickupTime());
-            stmt.setInt(9, rider.getNumPassengers());
-            stmt.setBoolean(10, rider.isRequireWheelchairVan());
-            stmt.setString(11, rider.getRequireChildSeat());
-            stmt.setString(12, rider.getPaymentType());
-            stmt.setString(13, rider.getConfirmationRequest());
-            stmt.setBoolean(14, rider.isBookReturn());
-            stmt.setDouble(15, rider.getPrice());
+            setRiderParameters(stmt, rider);
 
-            // Execute update and retrieve the generated ID
             int rowsInserted = stmt.executeUpdate();
             if (rowsInserted > 0) {
                 try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         rider.setId(generatedKeys.getInt(1)); // Set the generated ID to the Rider object
+                        LOGGER.log(Level.INFO, "Rider saved with ID: {0}", rider.getId());
                     }
                 }
                 return true;
-            } else {
-                System.err.println("No rows were inserted.");
-                return false;
             }
         } catch (SQLException e) {
-            System.err.println("Error saving rider: " + e.getMessage());
-            e.printStackTrace();
-            return false;
+            LOGGER.log(Level.SEVERE, "Error saving Rider: {0}", e.getMessage());
         }
+        return false;
     }
 
     // Delete Rider by ID
@@ -66,15 +50,16 @@ public class RiderDAO {
              PreparedStatement stmt = connection.prepareStatement(sql)) {
 
             stmt.setInt(1, riderId);
-
             int rowsDeleted = stmt.executeUpdate();
-            return rowsDeleted > 0;
 
+            if (rowsDeleted > 0) {
+                LOGGER.log(Level.INFO, "Rider with ID {0} deleted successfully.", riderId);
+                return true;
+            }
         } catch (SQLException e) {
-            System.err.println("Error deleting rider: " + e.getMessage());
-            e.printStackTrace();
-            return false;
+            LOGGER.log(Level.SEVERE, "Error deleting Rider: {0}", e.getMessage());
         }
+        return false;
     }
 
     // Fetch Rider by ID
@@ -85,17 +70,14 @@ public class RiderDAO {
              PreparedStatement stmt = connection.prepareStatement(sql)) {
 
             stmt.setInt(1, riderId);
-
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return mapRowToRider(rs);
                 }
             }
         } catch (SQLException e) {
-            System.err.println("Error fetching rider: " + e.getMessage());
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error fetching Rider: {0}", e.getMessage());
         }
-
         return null;
     }
 
@@ -108,31 +90,18 @@ public class RiderDAO {
         try (Connection connection = ConnectionFactory.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
 
-            stmt.setString(1, rider.getFirstName());
-            stmt.setString(2, rider.getLastName());
-            stmt.setString(3, rider.getEmail());
-            stmt.setString(4, rider.getPhoneNumber());
-            stmt.setString(5, rider.getPickupLocation());
-            stmt.setString(6, rider.getDropOffLocation());
-            stmt.setString(7, rider.getPickupDate());
-            stmt.setString(8, rider.getPickupTime());
-            stmt.setInt(9, rider.getNumPassengers());
-            stmt.setBoolean(10, rider.isRequireWheelchairVan());
-            stmt.setString(11, rider.getRequireChildSeat());
-            stmt.setString(12, rider.getPaymentType());
-            stmt.setString(13, rider.getConfirmationRequest());
-            stmt.setBoolean(14, rider.isBookReturn());
-            stmt.setDouble(15, rider.getPrice());
-            stmt.setInt(16, rider.getId());
+            setRiderParameters(stmt, rider);
+            stmt.setInt(16, rider.getId()); // ID for WHERE clause
 
             int rowsUpdated = stmt.executeUpdate();
-            return rowsUpdated > 0;
-
+            if (rowsUpdated > 0) {
+                LOGGER.log(Level.INFO, "Rider with ID {0} updated successfully.", rider.getId());
+                return true;
+            }
         } catch (SQLException e) {
-            System.err.println("Error updating rider: " + e.getMessage());
-            e.printStackTrace();
-            return false;
+            LOGGER.log(Level.SEVERE, "Error updating Rider: {0}", e.getMessage());
         }
+        return false;
     }
 
     // Fetch all Riders
@@ -147,13 +116,29 @@ public class RiderDAO {
             while (rs.next()) {
                 riders.add(mapRowToRider(rs));
             }
-
         } catch (SQLException e) {
-            System.err.println("Error fetching riders: " + e.getMessage());
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error fetching Riders: {0}", e.getMessage());
         }
-
         return riders;
+    }
+
+    // Helper method to set parameters for Rider
+    private void setRiderParameters(PreparedStatement stmt, Rider rider) throws SQLException {
+        stmt.setString(1, rider.getFirstName());
+        stmt.setString(2, rider.getLastName());
+        stmt.setString(3, rider.getEmail());
+        stmt.setString(4, rider.getPhoneNumber());
+        stmt.setString(5, rider.getPickupLocation());
+        stmt.setString(6, rider.getDropOffLocation());
+        stmt.setString(7, rider.getPickupDate());
+        stmt.setString(8, rider.getPickupTime());
+        stmt.setInt(9, rider.getNumPassengers());
+        stmt.setBoolean(10, rider.isRequireWheelchairVan());
+        stmt.setString(11, rider.getRequireChildSeat());
+        stmt.setString(12, rider.getPaymentType());
+        stmt.setString(13, rider.getConfirmationRequest());
+        stmt.setBoolean(14, rider.isBookReturn());
+        stmt.setDouble(15, rider.getPrice());
     }
 
     // Map ResultSet row to Rider object

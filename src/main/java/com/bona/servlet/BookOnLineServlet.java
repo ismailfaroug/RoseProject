@@ -40,7 +40,10 @@ public class BookOnLineServlet extends HttpServlet {
             String bookReturnParam = req.getParameter("bookReturn");
 
             // Validate required fields
-            if (firstName == null || lastName == null || pickupLocation == null || dropOffLocation == null) {
+            if (firstName == null || firstName.trim().isEmpty() ||
+                lastName == null || lastName.trim().isEmpty() ||
+                pickupLocation == null || pickupLocation.trim().isEmpty() ||
+                dropOffLocation == null || dropOffLocation.trim().isEmpty()) {
                 LOGGER.log(Level.WARNING, "Missing required fields: firstName, lastName, pickupLocation, dropOffLocation");
                 req.setAttribute("error", "Required fields are missing. Please provide all necessary information.");
                 req.getRequestDispatcher("error.jsp").forward(req, resp);
@@ -48,7 +51,8 @@ public class BookOnLineServlet extends HttpServlet {
             }
 
             // Parse and calculate pricing
-            int numPassengers = numPassengersParam != null ? Integer.parseInt(numPassengersParam) : 0;
+            int numPassengers = (numPassengersParam != null && !numPassengersParam.trim().isEmpty())
+                                ? Integer.parseInt(numPassengersParam) : 1;
             double basePrice = 20.0; // Base price for the ride
             double perPassengerCost = 5.0; // Additional cost per passenger
             double originalPrice = basePrice + (perPassengerCost * numPassengers);
@@ -89,6 +93,10 @@ public class BookOnLineServlet extends HttpServlet {
                 req.setAttribute("error", "Failed to save booking. Please try again.");
                 req.getRequestDispatcher("error.jsp").forward(req, resp);
             }
+        } catch (NumberFormatException e) {
+            LOGGER.log(Level.SEVERE, "Invalid input format", e);
+            req.setAttribute("error", "Invalid input. Please check the data entered.");
+            req.getRequestDispatcher("error.jsp").forward(req, resp);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error occurred while processing booking", e);
             req.setAttribute("error", "An error occurred while processing your request: " + e.getMessage());

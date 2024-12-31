@@ -16,36 +16,13 @@ public class Rider {
     private String paymentType;
     private String confirmationRequest;
     private boolean bookReturn;
-    private double price; // Added price field
+    private double price;
 
     // Default constructor
     public Rider() {
     }
 
-    // Parameterized constructor
-    public Rider(int id, String firstName, String lastName, String email, String phoneNumber,
-                 String pickupLocation, String dropOffLocation, String pickupDate, String pickupTime,
-                 int numPassengers, boolean requireWheelchairVan, String requireChildSeat,
-                 String paymentType, String confirmationRequest, boolean bookReturn, double price) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.pickupLocation = pickupLocation;
-        this.dropOffLocation = dropOffLocation;
-        this.pickupDate = pickupDate;
-        this.pickupTime = pickupTime;
-        this.numPassengers = numPassengers;
-        this.requireWheelchairVan = requireWheelchairVan;
-        this.requireChildSeat = requireChildSeat;
-        this.paymentType = paymentType;
-        this.confirmationRequest = confirmationRequest;
-        this.bookReturn = bookReturn;
-        this.price = price; // Initialize price in the constructor
-    }
-
-    // Getters and Setters
+    // Getters and Setters for all fields
     public int getId() {
         return id;
     }
@@ -166,11 +143,11 @@ public class Rider {
         this.bookReturn = bookReturn;
     }
 
-    public double getPrice() { // Getter for price
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(double price) { // Setter for price
+    public void setPrice(double price) {
         this.price = price;
     }
 
@@ -196,4 +173,3 @@ public class Rider {
                 '}';
     }
 }
-
