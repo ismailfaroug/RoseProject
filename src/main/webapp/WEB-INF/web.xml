@@ -72,4 +72,14 @@
         <url-pattern>/CancelBooking</url-pattern>
     </servlet-mapping>
 
+    <!-- JSP Configurations -->
+    <jsp-config>
+        <jsp-property-group>
+            <url-pattern>/paymentSuccess.jsp</url-pattern>
+        </jsp-property-group>
+        <jsp-property-group>
+            <url-pattern>/cancel.jsp</url-pattern>
+        </jsp-property-group>
+    </jsp-config>
+
 </web-app>

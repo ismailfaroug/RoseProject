@@ -16,5 +16,6 @@
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/logback-core-1.5.15.jar"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/slf4j-api-1.7.36.jar"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/twilio-10.6.4-jar-with-dependencies.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/rest-api-sdk-1.14.0.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

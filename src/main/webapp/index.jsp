@@ -86,7 +86,7 @@
         .hero h1 {
             font-size: 2.5rem;
             margin-bottom: 20px;
-            color: #333;
+            color: #pick;
         }
 
         .hero .buttons {
@@ -242,7 +242,7 @@
 
     <!-- Hero Section -->
     <div class="hero">
-        <h1>Book cash and get 5 off</h1>
+        <h1>Book today and get %10 off</h1>
         <div class="buttons">
             <button id="CallNowBtn">Call NOW</button>
             <button id="BookOnLineBtn">Book Online</button>

@@ -80,7 +80,7 @@
     </style>
 </head>
 <body>
-    <form action="BookOnLine" method="post">
+    <form action="ConfirmBooking" method="post">
         <h2 style="text-align: center;">Book Your Ride</h2>
         
         <div class="form-container">
@@ -151,27 +151,20 @@
             </div>
             <div>
                 <label>Book Your Return:</label>
-                <div class="radio-group">
-                    <input type="radio" id="bookReturnYes" name="bookReturn" value="true">
-                    <label for="bookReturnYes">Yes</label>
-                    <input type="radio" id="bookReturnNo" name="bookReturn" value="false" checked>
-                    <label for="bookReturnNo">No</label>
-                </div>
+                <input type="radio" id="bookReturnYes" name="bookReturn" value="true">
+                <label for="bookReturnYes">Yes</label>
+                <input type="radio" id="bookReturnNo" name="bookReturn" value="false" checked>
+                <label for="bookReturnNo">No</label>
             </div>
             <div>
                 <label>Require Wheelchair-Van:</label>
-                <div class="radio-group">
-                    <input type="radio" id="requireWheelchairYes" name="requireWheelchairVan" value="true">
-                    <label for="requireWheelchairYes">Yes</label>
-                    <input type="radio" id="requireWheelchairNo" name="requireWheelchairVan" value="false" checked>
-                    <label for="requireWheelchairNo">No</label>
-                </div>
+                <input type="radio" id="requireWheelchairYes" name="requireWheelchairVan" value="true">
+                <label for="requireWheelchairYes">Yes</label>
+                <input type="radio" id="requireWheelchairNo" name="requireWheelchairVan" value="false" checked>
+                <label for="requireWheelchairNo">No</label>
             </div>
         </div>
-        
-        <div style="text-align: center; margin-top: 20px;">
-            <button type="submit">Submit Booking</button>
-        </div>
+        <button type="submit">Submit Booking</button>
     </form>
 </body>
 </html>

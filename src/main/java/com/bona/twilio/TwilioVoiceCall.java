@@ -7,30 +7,35 @@ import com.twilio.type.PhoneNumber;
 import java.net.URI;
 
 public class TwilioVoiceCall {
-
-    // Twilio Account SID and Auth Token
-    private static final String ACCOUNT_SID = "your_account_sid_here"; // Replace with your actual SID
-    private static final String AUTH_TOKEN = "your_auth_token_here"; // Replace with your actual Auth Token
-
-    // Twilio Phone Number
+    // Twilio Account SID and Auth Token (replace with actual credentials)
+    private static final String ACCOUNT_SID = "your_account_sid";
+    private static final String AUTH_TOKEN = "your_auth_token";
     private static final String TWILIO_PHONE_NUMBER = "+1234567890"; // Replace with your Twilio number
 
     static {
-        // Initialize Twilio with your account SID and Auth Token
+        // Initialize Twilio once
         Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
     }
 
     /**
-     * Method to make a voice call using Twilio
+     * Makes a voice call using Twilio.
      *
-     * @param toPhoneNumber The recipient's phone number (must be in E.164 format, e.g., +1234567890)
+     * @param toPhoneNumber The recipient's phone number (E.164 format, e.g., +1234567890)
      * @param message       The message to be played during the call
      * @return true if the call was successfully initiated, false otherwise
      */
     public static boolean makeCall(String toPhoneNumber, String message) {
         try {
-            // URL to TwiML instructions (you'll need to host this XML file)
-            String twimlUrl = "https://handler.twilio.com/twiml/EHXXXXXXXXXXXXXXXXXXXXXXXXXXXX"; // Replace with your TwiML URL
+            if (toPhoneNumber == null || toPhoneNumber.isEmpty()) {
+                throw new IllegalArgumentException("Recipient phone number is required.");
+            }
+
+            if (message == null || message.isEmpty()) {
+                message = "Hello, this is a call from your application. Thank you!";
+            }
+
+            // Generate TwiML instructions dynamically (example hosted TwiML URL)
+            String twimlUrl = "https://handler.twilio.com/twiml/EHXXXXXXXXXXXXXXXXXXXXXXXXXXXX"; // Replace with your actual TwiML URL
 
             // Create the call
             Call call = Call.creator(
@@ -39,12 +44,11 @@ public class TwilioVoiceCall {
                     new URI(twimlUrl))                   // TwiML URL
                     .create();
 
-            System.out.println("Call initiated. SID: " + call.getSid());
+            System.out.println("Call initiated successfully. SID: " + call.getSid());
             return true;
 
         } catch (Exception e) {
             System.err.println("Error initiating call: " + e.getMessage());
-            e.printStackTrace();
             return false;
         }
     }
