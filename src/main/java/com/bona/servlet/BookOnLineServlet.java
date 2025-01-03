@@ -1,25 +1,52 @@
 package com.bona.servlet;
 
-import com.bona.deo.RiderDAO;
-import com.bona.entity.Rider;
-import com.bona.paypal.PayPalConfig;
-import com.paypal.api.payments.*;
-import com.paypal.base.rest.APIContext;
-import com.paypal.base.rest.PayPalRESTException;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.auth.oauth2.GoogleCredentials;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Servlet for handling online booking.
+ */
 public class BookOnLineServlet extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(BookOnLineServlet.class.getName());
+    private DatabaseReference databaseReference;
+
+    @Override
+    public void init() throws ServletException {
+        try {
+            String firebaseConfigPath = getServletContext().getInitParameter("FIREBASE_CONFIG_PATH");
+            InputStream serviceAccount = getServletContext().getResourceAsStream(firebaseConfigPath);
+
+            FirebaseOptions options = FirebaseOptions.builder()
+                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                    .setDatabaseUrl("https://rose-7d608-default-rtdb.firebaseio.com/") // Updated URL
+                    .build();
+
+            if (FirebaseApp.getApps().isEmpty()) {
+                FirebaseApp.initializeApp(options);
+            }
+
+            databaseReference = FirebaseDatabase.getInstance().getReference("bookings");
+            LOGGER.log(Level.INFO, "Firebase initialized successfully");
+        } catch (IOException e) {
+            throw new ServletException("Failed to initialize Firebase Admin SDK", e);
+        }
+    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -35,111 +62,77 @@ public class BookOnLineServlet extends HttpServlet {
             String dropOffLocation = req.getParameter("dropOffLocation");
             String numPassengersParam = req.getParameter("numPassengers");
 
-            if (firstName == null || firstName.trim().isEmpty() ||
-                lastName == null || lastName.trim().isEmpty() ||
-                pickupLocation == null || pickupLocation.trim().isEmpty() ||
-                dropOffLocation == null || dropOffLocation.trim().isEmpty()) {
+            if (!validateBookingDetails(firstName, lastName, phoneNumber, pickupLocation, dropOffLocation)) {
                 LOGGER.log(Level.WARNING, "Missing required fields");
-                req.setAttribute("error", "Required fields are missing. Please provide all necessary information.");
+                req.setAttribute("errorMessage", "Required fields are missing. Please provide all necessary information.");
                 req.getRequestDispatcher("error.jsp").forward(req, resp);
                 return;
             }
 
             // Parse and calculate pricing
-            int numPassengers = (numPassengersParam != null && !numPassengersParam.trim().isEmpty())
-                    ? Integer.parseInt(numPassengersParam) : 1;
-            double basePrice = 20.0;
-            double perPassengerCost = 5.0;
-            double originalPrice = basePrice + (perPassengerCost * numPassengers);
-            double discount = calculateDiscount(numPassengers, originalPrice);
-            double finalPrice = originalPrice - discount;
+            int numPassengers = parseNumberOfPassengers(numPassengersParam);
+            double tripPrice = calculateTripPrice(numPassengers);
+            int distance = 10; // Example static value; replace with a real distance calculation.
 
-            // Create a Rider object
-            Rider rider = new Rider();
-            rider.setFirstName(firstName);
-            rider.setLastName(lastName);
-            rider.setEmail(email);
-            rider.setPhoneNumber(phoneNumber);
-            rider.setPickupLocation(pickupLocation);
-            rider.setDropOffLocation(dropOffLocation);
-            rider.setNumPassengers(numPassengers);
-            rider.setPrice(finalPrice);
+            // Save booking details to Firebase
+            String bookingId = databaseReference.push().getKey();
+            Map<String, Object> bookingData = new HashMap<>();
+            bookingData.put("firstName", firstName);
+            bookingData.put("lastName", lastName);
+            bookingData.put("email", email);
+            bookingData.put("phoneNumber", phoneNumber);
+            bookingData.put("pickupLocation", pickupLocation);
+            bookingData.put("dropOffLocation", dropOffLocation);
+            bookingData.put("numPassengers", numPassengers);
+            bookingData.put("tripPrice", tripPrice);
+            bookingData.put("distance", distance);
 
-            // Save the Rider in the database
-            RiderDAO riderDAO = new RiderDAO();
-            boolean success = riderDAO.saveRider(rider);
-
-            if (success) {
-                LOGGER.log(Level.INFO, "Rider saved successfully. Redirecting to payment...");
-                
-                // Create PayPal payment
-                String approvalUrl = createPayment(finalPrice, req, resp);
-                resp.sendRedirect(approvalUrl); // Redirect the rider to the payment approval URL
-            } else {
-                LOGGER.log(Level.WARNING, "Failed to save Rider.");
-                req.setAttribute("error", "Failed to save booking. Please try again.");
-                req.getRequestDispatcher("error.jsp").forward(req, resp);
+            if (bookingId != null) {
+                databaseReference.child(bookingId).setValueAsync(bookingData);
             }
+
+            // Set attributes for confirmation
+            req.setAttribute("firstName", firstName);
+            req.setAttribute("lastName", lastName);
+            req.setAttribute("phoneNumber", phoneNumber);
+            req.setAttribute("pickupLocation", pickupLocation);
+            req.setAttribute("dropOffLocation", dropOffLocation);
+            req.setAttribute("numPassengers", numPassengers);
+            req.setAttribute("tripPrice", tripPrice);
+            req.setAttribute("distance", distance);
+
+            // Forward to confirm.jsp
+            req.getRequestDispatcher("confirm.jsp").forward(req, resp);
+
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error occurred while processing booking", e);
-            req.setAttribute("error", "An error occurred while processing your request: " + e.getMessage());
+            req.setAttribute("errorMessage", "An error occurred while processing your request: " + e.getMessage());
             req.getRequestDispatcher("error.jsp").forward(req, resp);
         }
     }
 
-    /**
-     * Calculates discount based on the number of passengers and original price.
-     */
-    private double calculateDiscount(int numPassengers, double originalPrice) {
-        if (numPassengers >= 5) {
-            return originalPrice * 0.1;
-        }
-        return 0.0;
+    private boolean validateBookingDetails(String firstName, String lastName, String phoneNumber,
+                                           String pickupLocation, String dropOffLocation) {
+        return firstName != null && !firstName.trim().isEmpty() &&
+               lastName != null && !lastName.trim().isEmpty() &&
+               phoneNumber != null && !phoneNumber.trim().isEmpty() &&
+               pickupLocation != null && !pickupLocation.trim().isEmpty() &&
+               dropOffLocation != null && !dropOffLocation.trim().isEmpty();
     }
 
-    /**
-     * Creates a PayPal payment and returns the approval URL.
-     */
-    private String createPayment(double price, HttpServletRequest req, HttpServletResponse resp) throws PayPalRESTException {
-        // Create payment details
-        Amount amount = new Amount();
-        amount.setCurrency("USD");
-        amount.setTotal(String.format("%.2f", price)); // Set the total amount
-
-        Transaction transaction = new Transaction();
-        transaction.setAmount(amount);
-        transaction.setDescription("Ride booking payment");
-
-        List<Transaction> transactions = new ArrayList<>();
-        transactions.add(transaction);
-
-        Payer payer = new Payer();
-        payer.setPaymentMethod("paypal");
-
-        // Set redirect URLs
-        String cancelUrl = req.getRequestURL().toString() + "?cancel=true";
-        String successUrl = req.getRequestURL().toString() + "?success=true";
-        RedirectUrls redirectUrls = new RedirectUrls();
-        redirectUrls.setCancelUrl(cancelUrl);
-        redirectUrls.setReturnUrl(successUrl);
-
-        Payment payment = new Payment();
-        payment.setIntent("sale");
-        payment.setPayer(payer);
-        payment.setTransactions(transactions);
-        payment.setRedirectUrls(redirectUrls);
-
-        // Create payment using PayPal API
-        APIContext apiContext = PayPalConfig.getAPIContext();
-        Payment createdPayment = payment.create(apiContext);
-
-        // Retrieve approval URL
-        for (Links link : createdPayment.getLinks()) {
-            if (link.getRel().equalsIgnoreCase("approval_url")) {
-                return link.getHref();
-            }
+    private int parseNumberOfPassengers(String numPassengersParam) {
+        try {
+            return (numPassengersParam != null && !numPassengersParam.trim().isEmpty())
+                    ? Integer.parseInt(numPassengersParam) : 1; // Default to 1 passenger
+        } catch (NumberFormatException e) {
+            LOGGER.log(Level.WARNING, "Invalid number of passengers provided. Defaulting to 1.", e);
+            return 1;
         }
+    }
 
-        throw new PayPalRESTException("Approval URL not found in PayPal response.");
+    private double calculateTripPrice(int numPassengers) {
+        double basePrice = 50.0; // Base price for the trip
+        double pricePerPassenger = 10.0; // Additional cost per passenger
+        return basePrice + (pricePerPassenger * numPassengers);
     }
 }

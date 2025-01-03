@@ -1,28 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-         xmlns="http://xmlns.jcp.org/xml/ns/javaee" 
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://xmlns.jcp.org/xml/ns/javaee"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee 
-                             http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd" 
+                             http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          id="WebApp_ID" version="4.0">
 
-    <display-name>Bona_Servlet_01</display-name>
+    <!-- Application Display Name -->
+    <display-name>Bona_Servlet_Application</display-name>
 
-    <!-- Welcome file configuration -->
+    <!-- Welcome File Configuration -->
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
 
-    <!-- Servlet and mapping for BookOnLineServlet -->
+    <!-- Context Parameters -->
+    <!-- Firebase Configuration Path -->
+    <context-param>
+        <param-name>FIREBASE_CONFIG_PATH</param-name>
+        <param-value>/src/main/java/resources/rose-7d608-firebase-adminsdk-ktdby-c76b9fc7bc.json</param-value>
+    </context-param>
+
+    <!-- Listener Configuration -->
+    <!-- Firebase Initialization Listener -->
+    <listener>
+        <listener-class>com.bona.utility.FirebaseInitListener</listener-class>
+    </listener>
+
+    <!-- Servlet Definitions and Mappings -->
+
+    <!-- BookOnLineServlet -->
     <servlet>
         <servlet-name>BookOnLineServlet</servlet-name>
         <servlet-class>com.bona.servlet.BookOnLineServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>BookOnLineServlet</servlet-name>
-        <url-pattern>/BookOnLine</url-pattern>
+        <url-pattern>/BookOnLineServlet</url-pattern>
     </servlet-mapping>
 
-    <!-- Servlet and mapping for ConfirmBookingServlet -->
+    <!-- ConfirmBookingServlet -->
     <servlet>
         <servlet-name>ConfirmBookingServlet</servlet-name>
         <servlet-class>com.bona.servlet.ConfirmBookingServlet</servlet-class>
@@ -32,7 +48,7 @@
         <url-pattern>/ConfirmBooking</url-pattern>
     </servlet-mapping>
 
-    <!-- Servlet and mapping for DeleteRiderServlet -->
+    <!-- DeleteRiderServlet -->
     <servlet>
         <servlet-name>DeleteRiderServlet</servlet-name>
         <servlet-class>com.bona.servlet.DeleteRiderServlet</servlet-class>
@@ -42,7 +58,7 @@
         <url-pattern>/DeleteRider</url-pattern>
     </servlet-mapping>
 
-    <!-- Servlet and mapping for CallNowServlet -->
+    <!-- CallNowServlet -->
     <servlet>
         <servlet-name>CallNowServlet</servlet-name>
         <servlet-class>com.bona.servlet.CallNowServlet</servlet-class>
@@ -52,17 +68,17 @@
         <url-pattern>/CallNow</url-pattern>
     </servlet-mapping>
 
-    <!-- Servlet and mapping for TwilioCallServlet -->
+    <!-- TwilioCallServlet -->
     <servlet>
         <servlet-name>TwilioCallServlet</servlet-name>
         <servlet-class>com.bona.servlet.TwilioCallServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>TwilioCallServlet</servlet-name>
-        <url-pattern>/twilio-call</url-pattern>
+        <url-pattern>/TwilioCall</url-pattern>
     </servlet-mapping>
 
-    <!-- Servlet and mapping for CancelBookingServlet -->
+    <!-- CancelBookingServlet -->
     <servlet>
         <servlet-name>CancelBookingServlet</servlet-name>
         <servlet-class>com.bona.servlet.CancelBookingServlet</servlet-class>
@@ -70,6 +86,26 @@
     <servlet-mapping>
         <servlet-name>CancelBookingServlet</servlet-name>
         <url-pattern>/CancelBooking</url-pattern>
+    </servlet-mapping>
+
+    <!-- PaymentSuccessServlet -->
+    <servlet>
+        <servlet-name>PaymentSuccessServlet</servlet-name>
+        <servlet-class>com.bona.servlet.PaymentSuccessServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>PaymentSuccessServlet</servlet-name>
+        <url-pattern>/PaymentSuccess</url-pattern>
+    </servlet-mapping>
+
+    <!-- BookingConfirmationServlet -->
+    <servlet>
+        <servlet-name>BookingConfirmationServlet</servlet-name>
+        <servlet-class>com.bona.servlet.BookingConfirmationServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>BookingConfirmationServlet</servlet-name>
+        <url-pattern>/BookingConfirmationServlet</url-pattern>
     </servlet-mapping>
 
     <!-- JSP Configurations -->
@@ -81,5 +117,8 @@
             <url-pattern>/cancel.jsp</url-pattern>
         </jsp-property-group>
     </jsp-config>
+
+    <!-- Additional Servlets Placeholder -->
+    <!-- Add future servlet mappings here -->
 
 </web-app>

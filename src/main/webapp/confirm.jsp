@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%> 
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -66,11 +66,17 @@
     <div class="container">
         <h2>Confirm Your Booking</h2>
         <div class="details">
-            <p><span>First Name:</span> ${firstName}</p>
-            <p><span>Last Name:</span> ${lastName}</p>
+            <p><span>Pickup Location:</span> ${pickupLocation}</p>
+            <p><span>Drop-off Location:</span> ${dropOffLocation}</p>
+            <p><span>Phone Number:</span> ${phoneNumber}</p> <!-- Add this line -->
+            <p><span>Trip Distance:</span> ${distance} km</p>
             <p><span>Trip Price:</span> $${tripPrice}</p>
         </div>
-        <form action="BookOnLineServlet" method="POST">
+        <form action="BookingConfirmationServlet" method="POST">
+            <input type="hidden" name="pickupLocation" value="${pickupLocation}" />
+            <input type="hidden" name="dropOffLocation" value="${dropOffLocation}" />
+            <input type="hidden" name="phoneNumber" value="${phoneNumber}" />
+            
             <input type="hidden" name="tripPrice" value="${tripPrice}" />
             <button type="submit">Confirm and Submit</button>
         </form>

@@ -38,26 +38,7 @@ public class RiderDAO {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error saving Rider: {0}", e.getMessage());
-        }
-        return false;
-    }
-
-    // Delete Rider by ID
-    public boolean deleteRider(int riderId) {
-        String sql = "DELETE FROM riders WHERE id = ?";
-
-        try (Connection connection = ConnectionFactory.getConnection();
-             PreparedStatement stmt = connection.prepareStatement(sql)) {
-
-            stmt.setInt(1, riderId);
-            int rowsDeleted = stmt.executeUpdate();
-
-            if (rowsDeleted > 0) {
-                LOGGER.log(Level.INFO, "Rider with ID {0} deleted successfully.", riderId);
-                return true;
-            }
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error deleting Rider: {0}", e.getMessage());
+            e.printStackTrace();
         }
         return false;
     }
@@ -77,6 +58,7 @@ public class RiderDAO {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error fetching Rider: {0}", e.getMessage());
+            e.printStackTrace();
         }
         return null;
     }
@@ -100,6 +82,28 @@ public class RiderDAO {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error updating Rider: {0}", e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // Delete Rider by ID
+    public boolean deleteRider(int riderId) {
+        String sql = "DELETE FROM riders WHERE id = ?";
+
+        try (Connection connection = ConnectionFactory.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+            stmt.setInt(1, riderId);
+            int rowsDeleted = stmt.executeUpdate();
+
+            if (rowsDeleted > 0) {
+                LOGGER.log(Level.INFO, "Rider with ID {0} deleted successfully.", riderId);
+                return true;
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error deleting Rider: {0}", e.getMessage());
+            e.printStackTrace();
         }
         return false;
     }
@@ -118,6 +122,7 @@ public class RiderDAO {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error fetching Riders: {0}", e.getMessage());
+            e.printStackTrace();
         }
         return riders;
     }
@@ -130,13 +135,13 @@ public class RiderDAO {
         stmt.setString(4, rider.getPhoneNumber());
         stmt.setString(5, rider.getPickupLocation());
         stmt.setString(6, rider.getDropOffLocation());
-        stmt.setString(7, rider.getPickupDate());
-        stmt.setString(8, rider.getPickupTime());
+        stmt.setDate(7, rider.getPickupDate() != null ? Date.valueOf(rider.getPickupDate()) : null);
+        stmt.setTime(8, rider.getPickupTime() != null ? Time.valueOf(rider.getPickupTime()) : null);
         stmt.setInt(9, rider.getNumPassengers());
         stmt.setBoolean(10, rider.isRequireWheelchairVan());
-        stmt.setString(11, rider.getRequireChildSeat());
-        stmt.setString(12, rider.getPaymentType());
-        stmt.setString(13, rider.getConfirmationRequest());
+        stmt.setString(11, rider.getRequireChildSeat() != null ? rider.getRequireChildSeat() : null);
+        stmt.setString(12, rider.getPaymentType() != null ? rider.getPaymentType() : null);
+        stmt.setString(13, rider.getConfirmationRequest() != null ? rider.getConfirmationRequest() : null);
         stmt.setBoolean(14, rider.isBookReturn());
         stmt.setDouble(15, rider.getPrice());
     }
@@ -151,8 +156,8 @@ public class RiderDAO {
         rider.setPhoneNumber(rs.getString("phone_number"));
         rider.setPickupLocation(rs.getString("pickup_location"));
         rider.setDropOffLocation(rs.getString("drop_off_location"));
-        rider.setPickupDate(rs.getString("pickup_date"));
-        rider.setPickupTime(rs.getString("pickup_time"));
+        rider.setPickupDate(rs.getDate("pickup_date") != null ? rs.getDate("pickup_date").toString() : null);
+        rider.setPickupTime(rs.getTime("pickup_time") != null ? rs.getTime("pickup_time").toString() : null);
         rider.setNumPassengers(rs.getInt("num_passengers"));
         rider.setRequireWheelchairVan(rs.getBoolean("require_wheelchair_van"));
         rider.setRequireChildSeat(rs.getString("require_child_seat"));
@@ -163,3 +168,5 @@ public class RiderDAO {
         return rider;
     }
 }
+
+
